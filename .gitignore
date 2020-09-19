@@ -120,3 +120,6 @@ events.out.tfevents.*
 
 # test file
 .coverage
+
+# data
+data
