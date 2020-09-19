@@ -1,6 +1,7 @@
 dev:
 	pip install -U -r requirements.txt
 	pre-commit install
+	sh apply.sh
 
 format:
 	black .
