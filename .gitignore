@@ -114,3 +114,12 @@ venv.bak/
 
 # Tensorboard
 events.out.tfevents.*
+
+# vscode
+.vscode
+
+# test file
+.coverage
+
+# data
+data
