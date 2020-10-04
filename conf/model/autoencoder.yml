@@ -1,0 +1,8 @@
+name: AE
+params:
+  batch_size: 128
+  num_channels: 1
+  latent_dim: 128
+  encoder_output_size: 576  # 64 * 3 * 3
+  max_epochs: 20
+  
