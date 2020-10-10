@@ -7,17 +7,17 @@ import torch
 from torch import nn
 
 
-class Encoder(nn.module):
+class Encoder(nn.Module):
     def __init__(self, hparams: dict) -> None:
         super(Encoder, self).__init__()
         self.hparams = hparams
-        self.layers = _build_model()
+        self.layers = self._build_model()
 
     def _build_model(self) -> nn.Sequential:
         model = nn.Sequential(
             self._conv_block(self.hparams.num_channels, 32, 4, 2),
             self._conv_block(32, 32, 4, 2),
-            self._conv_block(32, 64, 4, 2),
+            self._conv_block(32, 64, 3, 2),
             # self._conv_block(64, 64, 4, 2),
             nn.Flatten(),
         )
@@ -37,19 +37,19 @@ class Encoder(nn.module):
         return self.layers(x)
 
 
-class Decoder(nn.module):
+class Decoder(nn.Module):
     def __init__(self, hparams: dict) -> None:
         super(Decoder, self).__init__()
         self.hparams = hparams
-        self.fc = nn.Linear(self.hparams.latent_dim, 64 * 3 * 3)
+        self.fc = nn.Linear(self.hparams.latent_dim, 64 * 4 * 4)
         self.layers = self._build_model()
 
     def _build_model(self) -> nn.Sequential:
         model = nn.Sequential(
             # self._transpose_conv_block(64, 64, 4, 2),
-            self._transpose_conv_block(64, 32, 4, 2),
+            self._transpose_conv_block(64, 32, 3, 2),
             self._transpose_conv_block(32, 32, 4, 2),
-            self._transpose_conv_block(self.hparams.num_channels, 32, 4, 2),
+            self._transpose_conv_block(32, self.hparams.num_channels, 4, 2),
         )
         return model
 
@@ -65,8 +65,8 @@ class Decoder(nn.module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.fc(x)
-        x = x.view(64, 3, 3)
-        return self.laysers(x)
+        x = x.view(-1, 64, 4, 4)
+        return self.layers(x)
 
 
 def cnn_encoder(hparams: dict) -> Encoder:

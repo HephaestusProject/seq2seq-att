@@ -122,4 +122,6 @@ events.out.tfevents.*
 .coverage
 
 # data
-data
+dataset
+wandb
+checkpoints
