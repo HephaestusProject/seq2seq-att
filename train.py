@@ -3,13 +3,14 @@
     To implement code for training your model.
 """
 from argparse import ArgumentParser, Namespace
-from pathlib import Path
+import os
 
 import pytorch_lightning as pl
+from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 import torch
 
-from src.ae_module import AE, SaveCheckpointEveryNEpoch
+from src.ae_module import AE
 from src.utils import get_config, get_dataloader, get_exp_name
 
 pl.seed_everything(777)
@@ -47,16 +48,13 @@ def run(conf: dict, use_wandb: bool):
     runner = AE(conf.model.params)
 
     # Set trainer (pytorch lightening)
+    os.makedirs(conf.model.ckpt.path, exist_ok=True)
     trainer = pl.Trainer(
         logger=wandb_logger,
         gpus=-1 if torch.cuda.is_available() else 0,
         max_epochs=conf.model.params.max_epochs,
         deterministic=True,
-        callbacks=[
-            SaveCheckpointEveryNEpoch(
-                n=5, file_path=Path("checkpoints"), filename_prefix=exp_name
-            )
-        ],
+        checkpoint_callback=ModelCheckpoint(conf.model.ckpt.path),
     )
 
     # Train

@@ -1,34 +1,12 @@
+import os
 from typing import Tuple
 
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import wandb
 
 from src.model.net import cnn_decoder, cnn_encoder
-
-
-class SaveCheckpointEveryNEpoch(pl.Callback):
-    def __init__(self, file_path: str, n: int = 1, filename_prefix: str = "") -> None:
-        self.n = n
-        self.file_path = file_path
-        self.filename_prefix = filename_prefix
-
-    def on_epoch_end(self, trainer: pl.Trainer, pl_module: pl.LightningModule) -> None:
-        epoch = trainer.current_epoch
-        if epoch % self.n == 0:
-            # save models
-            filename = f"{self.filename_prefix}_epoch_{epoch}.ckpt"
-            ckpt_path = f"{self.file_path}/{filename}"
-            torch.save(
-                {
-                    "encoder": pl_module.encoder.state_dict(),
-                    "encoder_to_decoder_fc": pl_module.fc.state_dict(),
-                    "decoder": pl_module.decoder.state_dict(),
-                },
-                ckpt_path,
-            )
 
 
 class AE(pl.LightningModule):
