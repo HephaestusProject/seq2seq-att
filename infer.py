@@ -11,7 +11,7 @@ import pytorch_lightning as pl
 import torch
 
 from src.ae_module import AE
-from src.utils import get_config, get_dataloader
+from src.utils import Config, get_dataloader
 
 pl.seed_everything(777)
 torch.backends.cudnn.deterministic = True
@@ -20,9 +20,16 @@ torch.backends.cudnn.benchmark = False
 
 def parse_args() -> Namespace:
     # configurations
-    parser = ArgumentParser(description="Run Autoencoders")
-    parser.add_argument("--dataset", default="mnist", type=str, help="select dataset")
-    parser.add_argument("--model", default="AE", type=str, help="select model")
+    parser = ArgumentParser(description="Inference Autoencoders")
+    parser.add_argument(
+        "--cfg-dataset",
+        default="./configs/dataset/mnist.yml",
+        type=str,
+        help="select dataset",
+    )
+    parser.add_argument(
+        "--cfg-model", default="./configs/model/AE.yml", type=str, help="select model"
+    )
 
     return parser.parse_args()
 
@@ -45,16 +52,16 @@ def show_result(input_img, output_img):
     plt.show()
 
 
-def run(conf: dict):
+def run(cfg: dict):
     # Load checkpoint
-    checkpoint_path = os.path.join(conf.model.ckpt.path, conf.model.ckpt.filename)
+    checkpoint_path = os.path.join(cfg.model.ckpt.path, cfg.model.ckpt.filename)
     model = AE.load_from_checkpoint(
         checkpoint_path=checkpoint_path,
-        hparams=conf.model.params,
+        hparams=cfg.model.params,
     )
 
     # Select test image
-    _, val_dataloader = get_dataloader(conf)
+    _, val_dataloader = get_dataloader(cfg)
     test_image = None
     for data in val_dataloader:
         images, _ = data
@@ -72,5 +79,8 @@ def run(conf: dict):
 
 if __name__ == "__main__":
     args = parse_args()
-    config = get_config(args.dataset, args.model)
-    run(config)
+
+    cfg = Config()
+    cfg.add_dataset(args.cfg_dataset)
+    cfg.add_model(args.cfg_model)
+    run(cfg)

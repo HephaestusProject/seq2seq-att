@@ -7,15 +7,42 @@ from torch.utils.data import DataLoader
 from src.data import MNIST
 
 
-def get_config(dataset: str, model: str) -> DictConfig:
-    config_dir = Path("conf")
-    dataset_config_filename = f"{config_dir}/dataset/{dataset}.yml"
-    model_config_filename = f"{config_dir}/model/{model}.yml"
+class Config:
+    """Config: yaml parser using OmegaConf"""
 
-    return OmegaConf.merge(
-        {"dataset": OmegaConf.load(dataset_config_filename)},
-        {"model": OmegaConf.load(model_config_filename)},
-    )
+    def __init__(self) -> None:
+        self.configs = OmegaConf.create()
+
+    def add_dataset(self, config_path: str) -> None:
+        self.configs.update({"dataset": OmegaConf.load(config_path)})
+
+    def add_model(self, config_path: str) -> None:
+        self.configs.update({"model": OmegaConf.load(config_path)})
+
+    def add_api(self, config_path: str) -> None:
+        self.configs.update({"api": OmegaConf.load(config_path)})
+
+    def add_trainer(self, config_path: str) -> None:
+        self.configs.update({"trainer": OmegaConf.load(config_path)})
+
+    def merge(self: str) -> DictConfig:
+        return OmegaConf.merge(self.configs)
+
+    @property
+    def dataset(self):
+        return self.configs.dataset
+
+    @property
+    def model(self):
+        return self.configs.model
+
+    @property
+    def api(self):
+        return self.configs.api
+
+    @property
+    def trainer(self):
+        return self.configs.trainer
 
 
 def get_dataloader(conf: str) -> (DataLoader, DataLoader):

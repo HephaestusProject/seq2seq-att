@@ -3,13 +3,15 @@
     To implement code of your network using operation from ops.py.
 """
 
+from typing import Tuple
+
 import torch
 from torch import nn
 
 
-class Encoder(nn.Module):
+class AEEncoder(nn.Module):
     def __init__(self, hparams: dict) -> None:
-        super(Encoder, self).__init__()
+        super(AEEncoder, self).__init__()
         self.hparams = hparams
         self.layers = self._build_model()
 
@@ -20,6 +22,7 @@ class Encoder(nn.Module):
             self._conv_block(32, 64, 3, 2),
             # self._conv_block(64, 64, 4, 2),
             nn.Flatten(),
+            self._linear_block(),
         )
         return model
 
@@ -33,13 +36,19 @@ class Encoder(nn.Module):
         )
         return block
 
+    def _linear_block(self) -> nn.Sequential:
+        model = nn.Sequential(
+            nn.Linear(self.hparams.encoder_output_size, self.hparams.latent_dim)
+        )
+        return model
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.layers(x)
 
 
-class Decoder(nn.Module):
+class AEDecoder(nn.Module):
     def __init__(self, hparams: dict) -> None:
-        super(Decoder, self).__init__()
+        super(AEDecoder, self).__init__()
         self.hparams = hparams
         self.fc = nn.Linear(self.hparams.latent_dim, 64 * 4 * 4)
         self.layers = self._build_model()
@@ -69,9 +78,5 @@ class Decoder(nn.Module):
         return self.layers(x)
 
 
-def cnn_encoder(hparams: dict) -> Encoder:
-    return Encoder(hparams)
-
-
-def cnn_decoder(hparams: dict) -> Decoder:
-    return Decoder(hparams)
+def get_AE_models(hparams: dict) -> Tuple[AEEncoder, AEDecoder]:
+    return AEEncoder(hparams), AEDecoder(hparams)

@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from src.model.net import cnn_decoder, cnn_encoder
+from src.model.net import get_AE_models
 
 
 class AE(pl.LightningModule):
@@ -14,17 +14,13 @@ class AE(pl.LightningModule):
         super(AE, self).__init__()
         self.hparams = hparams
 
-        self.encoder = cnn_encoder(self.hparams)
-        self.decoder = cnn_decoder(self.hparams)
-
-        self.fc = nn.Linear(self.hparams.encoder_output_size, self.hparams.latent_dim)
+        self.encoder, self.decoder = get_AE_models(self.hparams)
 
     def configure_optimizers(self) -> torch.optim:
         return torch.optim.Adam(self.parameters(), lr=self.hparams.lr)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        features = self.encoder(x)
-        z = self.fc(features)
+        z = self.encoder(x)
         x_hat = self.decoder(z)
         return x_hat
 
