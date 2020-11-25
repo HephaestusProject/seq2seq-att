@@ -47,7 +47,12 @@ class Config:
 
 def get_dataloader(conf: str) -> (DataLoader, DataLoader):
     if conf.dataset.name == "mnist":
-        data = MNIST(conf)
+        data = torchvision.datasets.MNIST(
+            conf.path.train,
+            train=True,
+            download=True,
+            transform=transforms.ToTensor(),
+        )
         return data.train_dataloader(), data.val_dataloader()
     else:
         raise Exception(f"Invalid dataset name: {conf.dataset.name}")

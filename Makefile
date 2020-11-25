@@ -5,9 +5,9 @@ dev:
 
 format:
 	black .
-	isort .
+	isort . --skip wandb
 
 test:
 	black . --check
-	isort . --check
+	isort . --check --skip wandb
 	pytest --cov-report=xml --cov=./ tests/*
