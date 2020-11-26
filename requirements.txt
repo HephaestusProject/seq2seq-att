@@ -1,5 +1,10 @@
 torch==1.6.0
+torchvision==0.7.0
 pytorch-lightning==0.9.0
+omegaconf==2.0.1
+
+wandb
+matplotlib
 
 black
 isort

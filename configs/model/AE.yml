@@ -1,0 +1,12 @@
+name: AE
+params:
+  batch_size: 128
+  num_channels: 1
+  latent_dim: 128
+  encoder_output_size: 1024  # 64 * 4 * 4
+  max_epochs: 20
+  lr: 1e-4
+ckpt:
+  path: "checkpoints/AE"
+  filename: "epoch=19.ckpt"
+  
