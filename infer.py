@@ -56,9 +56,9 @@ def run(cfg: dict):
     checkpoint_path = os.path.join(cfg.model.ckpt.path, cfg.model.ckpt.filename)
 
     Model = getattr(__import__("src"), cfg.model.name)
-    model = Model.load_from_checkpoint(
+    model = Model(cfg.model.params)
+    model = model.load_from_checkpoint(
         checkpoint_path=checkpoint_path,
-        hparams=cfg.model.params,
     )
 
     # Select test image
