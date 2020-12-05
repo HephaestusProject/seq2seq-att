@@ -2,7 +2,7 @@ import pytest
 import pytorch_lightning
 import torch
 
-from src.model.ops import add, multiply, subtract
+from src.models.ops import add, multiply, subtract
 
 
 @pytest.fixture(scope="module")

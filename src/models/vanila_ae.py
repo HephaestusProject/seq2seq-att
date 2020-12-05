@@ -1,4 +1,3 @@
-import os
 from typing import Tuple
 
 import pytorch_lightning as pl
@@ -6,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from src.model.net import get_AE_models
+from src.models.net import get_AE_models
 
 
 class AE(pl.LightningModule):

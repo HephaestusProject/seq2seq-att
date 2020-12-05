@@ -10,7 +10,6 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 import torch
 
-from src.ae_module import AE
 from src.utils import Config, get_dataloader, get_exp_name
 
 pl.seed_everything(777)
@@ -52,7 +51,8 @@ def run(cfg: dict, use_wandb: bool):
     train_dataloader, val_dataloader = get_dataloader(cfg)
 
     # Create model
-    runner = AE(cfg.model.params)
+    Model = getattr(__import__("src"), cfg.model.name)
+    runner = Model(cfg.model.params)
 
     # Set trainer (pytorch lightening)
     os.makedirs(cfg.model.ckpt.path, exist_ok=True)

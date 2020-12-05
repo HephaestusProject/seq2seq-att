@@ -10,7 +10,6 @@ import numpy as np
 import pytorch_lightning as pl
 import torch
 
-from src.ae_module import AE
 from src.utils import Config, get_dataloader
 
 pl.seed_everything(777)
@@ -55,7 +54,9 @@ def show_result(input_img, output_img):
 def run(cfg: dict):
     # Load checkpoint
     checkpoint_path = os.path.join(cfg.model.ckpt.path, cfg.model.ckpt.filename)
-    model = AE.load_from_checkpoint(
+
+    Model = getattr(__import__("src"), cfg.model.name)
+    model = Model.load_from_checkpoint(
         checkpoint_path=checkpoint_path,
         hparams=cfg.model.params,
     )
