@@ -1,5 +1,5 @@
 import functools
-from pathlib import Path
+from typing import Tuple
 
 from omegaconf import DictConfig, OmegaConf
 from torch.utils.data import DataLoader
@@ -45,14 +45,9 @@ class Config:
         return self.configs.trainer
 
 
-def get_dataloader(conf: str) -> (DataLoader, DataLoader):
+def get_dataloader(conf: str) -> Tuple[DataLoader, DataLoader]:
     if conf.dataset.name == "mnist":
-        data = torchvision.datasets.MNIST(
-            conf.path.train,
-            train=True,
-            download=True,
-            transform=transforms.ToTensor(),
-        )
+        data = MNIST(conf)
         return data.train_dataloader(), data.val_dataloader()
     else:
         raise Exception(f"Invalid dataset name: {conf.dataset.name}")
